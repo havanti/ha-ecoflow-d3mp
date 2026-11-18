@@ -272,10 +272,6 @@
     "max_connection_attempts_reached": {
       "title": "Could not connect to {device_name} after {attempts} unsuccessful attempts",
       "description": "Failed to connect to {device_name} after {attempts} unsuccessful attempts. Check the logs for more info.\n\nAutomatic retry was disabled to not spam logs, integration has to be reloaded manually. This error clears after successful connection."
-    },
-    "charging_minimum_applied": {
-      "title": "Charging controls on {device_name} now stop at the EcoFlow app's minimum unless you unlock it in the device options",
-      "description": "The AC and DC charging controls now refuse values below the minimum the EcoFlow app enforces, so an automation that sets a lower value will fail with an out-of-range error.\n\n⚠️ WARNING: going below these minimums may damage your device. EcoFlow likely set them for a reason, running below them for long periods can wear its components, and damage caused this way may not be covered by warranty. Only unlock them if you accept that risk.\n\nTo keep setting values below the minimum, turn on the matching option under Configure for this device.\n\nThe minimums for this device are {minimums}."
     }
   },
   "entity": {

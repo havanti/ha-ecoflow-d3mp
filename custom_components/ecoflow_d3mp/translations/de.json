@@ -272,10 +272,6 @@
     "max_connection_attempts_reached": {
       "title": "Keine Verbindung zu {device_name} nach {attempts} erfolglosen Versuchen",
       "description": "Verbindung zu {device_name} nach {attempts} erfolglosen Versuchen gescheitert. Mehr dazu im Log.\n\nDie automatische Wiederholung ist abgeschaltet, damit das Log nicht vollläuft; die Integration muss von Hand neu geladen werden. Der Fehler verschwindet nach erfolgreicher Verbindung."
-    },
-    "charging_minimum_applied": {
-      "title": "Laderegler an {device_name} enden jetzt am Minimum der EcoFlow-App, solange es nicht in den Geräteoptionen aufgehoben ist",
-      "description": "Die AC- und DC-Laderegler lehnen jetzt Werte unter dem Minimum der EcoFlow-App ab; eine Automation, die einen niedrigeren Wert setzt, scheitert mit einem Bereichsfehler.\n\n⚠️ WARNUNG: Werte unter diesen Minima können das Gerät beschädigen. EcoFlow hat sie vermutlich aus gutem Grund gesetzt; langer Betrieb darunter kann Bauteile verschleißen, und solche Schäden deckt die Garantie womöglich nicht. Nur aufheben, wer dieses Risiko trägt.\n\nUm weiter Werte unter dem Minimum zu setzen, die passende Option unter Konfigurieren für dieses Gerät einschalten.\n\nDie Minima für dieses Gerät sind {minimums}."
     }
   },
   "entity": {

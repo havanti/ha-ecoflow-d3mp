@@ -20,8 +20,6 @@ from homeassistant.exceptions import (
     ConfigEntryError,
     ConfigEntryNotReady,
 )
-from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers import entity_registry as er
 
 from . import eflib
 from .config_flow import CONF_COLLECT_PACKETS, ConfLogOptions, LogOptions, PacketVersion
@@ -34,7 +32,6 @@ from .const import (
     CONF_DEVICE_OPTIONS,
     CONF_DIAGNOSTICS_ON_EXCEPTION,
     CONF_DIAGNOSTICS_OPTIONS,
-    CONF_EXTRA_BATTERY,
     CONF_PACKET_VERSION,
     CONF_PREFERRED_PROXY,
     CONF_PREFERRED_PROXY_TIMEOUT,
@@ -46,7 +43,6 @@ from .const import (
     DEFAULT_UPDATE_PERIOD,
     DOMAIN,
     NO_PREFERRED_PROXY,
-    UNIQUE_ID_PREFIX,
 )
 from .eflib.connection import (
     BleakError,
@@ -56,9 +52,7 @@ from .eflib.connection import (
 )
 from .eflib.exceptions import AuthErrors, UnsupportedBluetoothProtocol
 from .eflib.logging_util import ConnectionLog
-from .issues import create_charging_minimum_issue
 from .proxy import connect_gate, wait_for_preferred_proxy
-from .registry import async_get_device
 
 PLATFORMS: list[Platform] = [
     Platform.BUTTON,
@@ -239,59 +233,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: DeviceConfigEntry) -> b
 async def async_remove_entry(hass: HomeAssistant, entry: DeviceConfigEntry):
     _cancel_reappear_callback(hass, entry)
     ConnectionLog.clean_cache_for(entry.data[CONF_ADDRESS])
-
-
-async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
-    """Migrate old config entry to a newer version."""
-    _LOGGER.debug(
-        "Migrating configuration from version %s.%s",
-        config_entry.version,
-        config_entry.minor_version,
-    )
-
-    if config_entry.version < 2:
-        if config_entry.minor_version < 1:
-            address = config_entry.data.get(CONF_ADDRESS)
-            device_reg = dr.async_get(hass)
-            device_entry = async_get_device(
-                device_reg,
-                identifiers={(DOMAIN, address)},
-                config_entry_id=config_entry.entry_id,
-            )
-
-            if device_entry is not None and device_entry.serial_number is not None:
-                serial_number = device_entry.serial_number
-                old_prefix = device_entry.name + "_"
-
-                entity_reg = er.async_get(hass)
-                for entity_entry in er.async_entries_for_config_entry(
-                    entity_reg, config_entry.entry_id
-                ):
-                    old_unique_id = entity_entry.unique_id
-                    if old_unique_id.startswith(old_prefix):
-                        key = old_unique_id[len(old_prefix) :]
-                        new_unique_id = f"{UNIQUE_ID_PREFIX}_{serial_number}_{key}"
-                        entity_reg.async_update_entity(
-                            entity_entry.entity_id, new_unique_id=new_unique_id
-                        )
-
-            hass.config_entries.async_update_entry(config_entry, minor_version=1)
-
-        if config_entry.minor_version < 2:
-            data = {**config_entry.data}
-            data.setdefault(CONF_EXTRA_BATTERY, [])
-            hass.config_entries.async_update_entry(
-                config_entry, data=data, minor_version=2
-            )
-
-        if config_entry.minor_version < 3:
-            # Charging controls gained the minimums the app enforces, which an
-            # automation set below can no longer reach. Only entries that predate the
-            # change are told, so a fresh install is not warned about a default
-            create_charging_minimum_issue(hass, config_entry)
-            hass.config_entries.async_update_entry(config_entry, minor_version=3)
-
-    return True
 
 
 def _register_reappear_callback(
