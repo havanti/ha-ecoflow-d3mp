@@ -2,6 +2,20 @@
 
 All notable changes to this integration. German version: [CHANGELOG.md](CHANGELOG.md).
 
+## 0.1.5
+
+### Fixed
+
+- Extra battery: when the port already reports "pack present" but still sends an empty list
+  of values, every reading is unknown. Until now 0 Wh, 0 Ah and 0 % briefly went into the
+  statistics, typically while plugging or unplugging.
+
+### Changed
+
+- The extra battery's energy is no longer rounded to whole Wh in the library; the display
+  still rounds.
+- Icons for remaining and full energy.
+
 ## 0.1.4
 
 ### Added

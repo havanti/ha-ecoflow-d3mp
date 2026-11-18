@@ -182,16 +182,26 @@ def test_extra_battery_readings(device):
     assert device.extra_battery_1_charging_state is ChargeState.CHARGING
 
 
-def test_extra_battery_energy_from_capacity_at_nominal_voltage(device):
-    feed(device, plug_in_info_dcp_in_flag=True, plug_in_info_dcp_resv=_pack())
-    assert device.extra_battery_1_full_energy == round(39.5 * 51.2)
-    assert device.extra_battery_1_remaining_energy == round(34.56 * 51.2)
-
-
-def test_extra_battery_design_capacity_is_the_rated_energy(device):
-    pack = resv(w4=40000)
+@pytest.mark.parametrize(
+    ("milliamp_hours", "watt_hours"),
+    [(40000, 2048.0), (39500, 2022.4), (0, 0.0)],
+)
+def test_extra_battery_energy_is_capacity_at_nominal_voltage(
+    device, milliamp_hours, watt_hours
+):
+    pack = resv(w4=milliamp_hours, w5=milliamp_hours, w3=40000)
     feed(device, plug_in_info_dcp_in_flag=True, plug_in_info_dcp_resv=pack)
-    assert device.extra_battery_1_full_energy == 2048
+    assert device.extra_battery_1_full_energy == pytest.approx(watt_hours)
+    assert device.extra_battery_1_remaining_energy == pytest.approx(watt_hours)
+
+
+def test_present_flag_over_an_empty_list_reads_nothing(device):
+    feed(device, plug_in_info_dcp_in_flag=True, plug_in_info_dcp_resv=resv())
+    assert device.extra_battery_1_remaining_energy is None
+    assert device.extra_battery_1_full_energy is None
+    assert device.extra_battery_1_remaining_capacity is None
+    assert device.extra_battery_1_battery_level is None
+    assert device.extra_battery_1_charging_state is None
 
 
 def test_second_extra_battery_reads_its_own_port(device):

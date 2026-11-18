@@ -23,8 +23,10 @@ and starts disabled.
   50 %), AC charging power (200–2400 W), standby timers, screen timeout and brightness
 - **Select:** AC charging mode
 - **Button:** power off (disabled by default)
-- **Extra battery:** its own device with state of charge, capacity, cell voltages,
-  temperatures and charging state
+- **Extra battery:** its own device with state of charge, capacity in Ah, energy in Wh,
+  current, cell voltages, temperatures and charging state. Energy is the reported capacity
+  at the pack's nominal 51.2 V, and current is measured from the change in remaining
+  capacity; the device reports neither directly
 
 ## Limits you should know
 

@@ -3,6 +3,20 @@
 Alle nennenswerten Änderungen an dieser Integration. Englische Fassung:
 [CHANGELOG.en.md](CHANGELOG.en.md).
 
+## 0.1.5
+
+### Behoben
+
+- Zusatzakku: Meldet der Port schon „Akku da", liefert aber noch eine leere Werteliste, gelten
+  alle Werte als unbekannt. Bisher standen dann kurz 0 Wh, 0 Ah und 0 % in der Statistik,
+  typischerweise beim An- und Abstecken.
+
+### Geändert
+
+- Die Energie des Zusatzakkus wird nicht mehr in der Bibliothek auf ganze Wh gerundet; die
+  Anzeige rundet weiterhin.
+- Icons für Restenergie und Vollenergie.
+
 ## 0.1.4
 
 ### Neu

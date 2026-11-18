@@ -151,6 +151,12 @@
       },
       "protect_port": {
         "default": "mdi:shield-outline"
+      },
+      "remaining_energy": {
+        "default": "mdi:battery-medium"
+      },
+      "full_energy": {
+        "default": "mdi:battery-high"
       }
     },
     "switch": {

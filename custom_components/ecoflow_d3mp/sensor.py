@@ -199,7 +199,7 @@ def raw(
 
 
 def current(
-    key: str = "", enabled: bool = True, **kwargs: Unpack[_SensorKwargs]
+    key: str = "", *, enabled: bool = True, **kwargs: Unpack[_SensorKwargs]
 ) -> EcoflowSensorEntityDescription:
     return EcoflowSensorEntityDescription(
         key=key,
@@ -213,7 +213,7 @@ def current(
 
 
 def stored_energy(
-    key: str = "", enabled: bool = True, **kwargs: Unpack[_SensorKwargs]
+    key: str = "", *, enabled: bool = True, **kwargs: Unpack[_SensorKwargs]
 ) -> EcoflowSensorEntityDescription:
     return EcoflowSensorEntityDescription(
         key=key,

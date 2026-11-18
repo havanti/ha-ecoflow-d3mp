@@ -74,7 +74,8 @@ _RESV_TEMP_SENSORS = 4
 _PACK_CELLS_IN_SERIES = 16
 # The pack reports capacity in Ah and no energy. Its rated 2048 Wh over the 40 Ah
 # it reports as design capacity is 51.2 V, the nominal voltage of sixteen LiFePO4
-# cells, and that is what turns its Ah into Wh.
+# cells, and that is what turns its Ah into Wh. Measured on the D3E1 pack only; a
+# pack with a different cell count would need its own voltage.
 _CELL_NOMINAL_V = 3.2
 _PACK_NOMINAL_V = _PACK_CELLS_IN_SERIES * _CELL_NOMINAL_V
 # A pack that was just unplugged reports zeroes for its cells
@@ -305,10 +306,12 @@ def _pack_ah(index: int):
 
 
 def _pack_wh(index: int):
-    def read(words: list[int]) -> int | None:
-        if (word := _word(words, index)) is None:
+    amp_hours = _pack_ah(index)
+
+    def read(words: list[int]) -> float | None:
+        if (ah := amp_hours(words)) is None:
             return None
-        return round(word / _MAH_PER_AH * _PACK_NOMINAL_V)
+        return ah * _PACK_NOMINAL_V
 
     return read
 
@@ -644,7 +647,13 @@ class Device(DeviceBase, ProtobufProps):
         # so every reading is gated on the port's presence flag
         if not getattr(self, f"extra_battery_{port}_enabled"):
             return None
-        return getattr(self, f"_extra_battery_{port}_resv")
+        words = getattr(self, f"_extra_battery_{port}_resv")
+        # The flag and the list arrive on their own schedule: around plugging and
+        # unplugging the flag can say "present" over a list that is still all
+        # zeroes, and a pack that is there never reports one
+        if not words or not any(words):
+            return None
+        return words
 
     def __init__(
         self, ble_dev: BLEDevice, adv_data: AdvertisementData, sn: str
