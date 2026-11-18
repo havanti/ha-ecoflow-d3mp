@@ -2,6 +2,18 @@
 
 All notable changes to this integration. German version: [CHANGELOG.md](CHANGELOG.md).
 
+## 0.1.1
+
+### Fixed
+
+- The extra battery is reliably linked to its station when it is first created. The station
+  is now looked up in the integration's own config entry, even before the entity is
+  registered.
+- A station missing from the device registry is reported as a warning in the log instead of
+  the link being dropped silently.
+- Detecting how Home Assistant links a device to its parent no longer depends on type
+  annotations.
+
 ## 0.1.0
 
 First release. Hard fork of `rabits/ha-ef-ble` v1.3.1, reduced to the EcoFlow DELTA 3 Max

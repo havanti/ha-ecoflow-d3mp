@@ -4,50 +4,96 @@ from pytest_mock import MockerFixture
 
 from custom_components.ecoflow_d3mp import entity
 from custom_components.ecoflow_d3mp.const import DOMAIN
+from custom_components.ecoflow_d3mp.eflib.devices.delta3_max_plus import Device
 
 ADDRESS = "AA:BB:CC:DD:EE:FF"
+ENTRY_ID = "entry-1"
+STATION = (DOMAIN, ADDRESS)
+
+links_by_id = pytest.mark.skipif(
+    not entity._LINKS_PARENT_BY_ID,
+    reason="this Home Assistant links a parent device by identifier pair",
+)
+links_by_pair = pytest.mark.skipif(
+    entity._LINKS_PARENT_BY_ID,
+    reason="this Home Assistant links a parent device by registry id",
+)
+
+
+class _Registry:
+    """Device registry holding the devices of several config entries"""
+
+    def __init__(self, devices):
+        self._devices = devices
+
+    def async_get_devices(self, *, identifiers, connections, config_entry_id):
+        return [
+            device
+            for device in self._devices
+            if device.identifiers & identifiers
+            and config_entry_id in (None, device.config_entry_id)
+        ]
+
+
+def _registered(mocker, device_id, entry_id=ENTRY_ID, identifiers=frozenset({STATION})):
+    return mocker.Mock(id=device_id, config_entry_id=entry_id, identifiers=identifiers)
 
 
 @pytest.fixture
 def addon(mocker: MockerFixture):
-    device = mocker.Mock()
-    device.address = ADDRESS
-    device.name = "EF-TEST"
-    device.extra_battery_1_sn = None
-    addon = entity.EcoflowBatteryAddonEntity(device, 1)
+    ble_dev = mocker.Mock()
+    ble_dev.address = ADDRESS
+    addon = entity.EcoflowBatteryAddonEntity(
+        Device(ble_dev, mocker.MagicMock(), "D3M1TEST1234"), 1
+    )
     addon.hass = mocker.Mock()
-    mocker.patch.object(entity.dr, "async_get")
+    addon.platform = mocker.Mock()
+    addon.platform.config_entry.entry_id = ENTRY_ID
     return addon
 
 
-def _takes_parent_id(mocker: MockerFixture, *, supported: bool):
-    annotations = dict(DeviceInfo.__annotations__)
-    annotations.pop("via_device_id", None)
-    if supported:
-        annotations["via_device_id"] = str
-    mocker.patch.object(DeviceInfo, "__annotations__", annotations)
+def _register(mocker, devices):
+    mocker.patch.object(entity.dr, "async_get", return_value=_Registry(devices))
 
 
-def test_pack_links_by_identifier_where_that_is_all_there_is(addon, mocker):
-    _takes_parent_id(mocker, supported=False)
+def test_link_uses_a_field_this_home_assistant_declares(addon, mocker):
+    _register(mocker, [_registered(mocker, "station-id")])
+    declared = DeviceInfo.__optional_keys__ | DeviceInfo.__required_keys__
+    link = addon._station_link()
+    assert link
+    assert set(link) <= declared
+
+
+@links_by_pair
+def test_pack_links_by_identifier_pair(addon):
+    assert addon.device_info["via_device"] == STATION
+
+
+@links_by_id
+def test_pack_links_by_the_station_registry_id(addon, mocker):
+    _register(mocker, [_registered(mocker, "station-id")])
     info = addon.device_info
-    assert info["via_device"] == (DOMAIN, ADDRESS)
-    assert "via_device_id" not in info
-
-
-def test_pack_links_by_registry_id_where_supported(addon, mocker):
-    _takes_parent_id(mocker, supported=True)
-    parent = mocker.Mock(id="parent-id")
-    lookup = mocker.patch.object(entity, "async_get_device", return_value=parent)
-    info = addon.device_info
-    assert info["via_device_id"] == "parent-id"
+    assert info["via_device_id"] == "station-id"
     assert "via_device" not in info
-    assert lookup.call_args.kwargs["identifiers"] == {(DOMAIN, ADDRESS)}
 
 
-def test_pack_stays_unlinked_when_the_station_is_not_registered(addon, mocker):
-    _takes_parent_id(mocker, supported=True)
-    mocker.patch.object(entity, "async_get_device", return_value=None)
+@links_by_id
+def test_pack_links_to_the_station_of_its_own_config_entry(addon, mocker):
+    _register(
+        mocker,
+        [
+            _registered(mocker, "foreign-id", entry_id="entry-2"),
+            _registered(mocker, "station-id"),
+        ],
+    )
+    assert addon.device_info["via_device_id"] == "station-id"
+
+
+@links_by_id
+def test_pack_stays_unlinked_and_says_so_when_the_station_is_missing(addon, mocker):
+    _register(mocker, [])
+    warning = mocker.patch.object(entity._LOGGER, "warning")
     info = addon.device_info
     assert "via_device_id" not in info
     assert "via_device" not in info
+    warning.assert_called_once()

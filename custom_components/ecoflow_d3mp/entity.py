@@ -1,10 +1,15 @@
 import dataclasses
+import logging
 from collections.abc import Callable, Mapping
 from typing import Any, Protocol, runtime_checkable
 
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH, DeviceInfo
+from homeassistant.helpers.device_registry import (
+    CONNECTION_BLUETOOTH,
+    DeviceEntry,
+    DeviceInfo,
+)
 from homeassistant.helpers.entity import Entity, EntityDescription
 from homeassistant.helpers.restore_state import ExtraStoredData, RestoreEntity
 
@@ -12,6 +17,15 @@ from .const import DOMAIN, MANUFACTURER
 from .eflib import DeviceBase
 from .eflib.device_mappings import battery_name_from_device
 from .registry import async_get_device
+
+_LOGGER = logging.getLogger(__name__)
+
+# Whether this Home Assistant links a device to its parent by registry id. Read off
+# the keys DeviceInfo declares, which works for the TypedDict it used to be and for
+# the class that replaced it.
+_LINKS_PARENT_BY_ID = "via_device_id" in (
+    DeviceInfo.__optional_keys__ | DeviceInfo.__required_keys__
+)
 
 
 class EcoflowEntity(Entity):
@@ -111,44 +125,60 @@ class EcoflowBatteryAddonEntity(EcoflowEntity):
         self._sn_prop = f"extra_battery_{battery_index}_sn"
 
     @property
+    def _station_identifier(self) -> tuple[str, str]:
+        return (DOMAIN, self._device.address)
+
+    @property
+    def _pack_identifier(self) -> tuple[str, str]:
+        return (DOMAIN, f"{self._device.address}_battery_{self._battery_index}")
+
+    def _registered_device(self, identifier: tuple[str, str]) -> DeviceEntry | None:
+        """Device of this config entry carrying `identifier`, if it is registered"""
+        # The platform knows the config entry from the start; the entity's own
+        # registry entry only exists once it has been added
+        platform = self.platform
+        config_entry = platform.config_entry if platform is not None else None
+        return async_get_device(
+            dr.async_get(self.hass),
+            identifiers={identifier},
+            config_entry_id=config_entry.entry_id if config_entry is not None else None,
+        )
+
+    @property
     def device_info(self) -> DeviceInfo:
         battery_sn = getattr(self._device, self._sn_prop, None)
         battery_model = battery_name_from_device(self._device, self._battery_index)
 
-        info = DeviceInfo(
-            identifiers={
-                (DOMAIN, f"{self._device.address}_battery_{self._battery_index}"),
-            },
+        return DeviceInfo(
+            identifiers={self._pack_identifier},
             name=f"{self._device.name} Extra Battery {self._battery_index}",
             manufacturer=MANUFACTURER,
             model=battery_model,
             serial_number=battery_sn,
+            **self._station_link(),
         )
-        info.update(self._parent_device_link())
-        return info
 
-    def _parent_device_link(self) -> dict[str, Any]:
+    def _station_link(self) -> dict[str, Any]:
         """
         Link to the station this pack hangs on, in the form Home Assistant accepts
 
-        Newer releases take the parent's registry id and reject the identifier
-        pair once the entity is re-added from the UI; older ones only know the pair.
+        Home Assistant 2026.11 deprecates the identifier pair in favour of the
+        station's registry id and raises when an entity still sending the pair is
+        re-added from the UI. Releases without the id field only know the pair.
         """
-        parent = (DOMAIN, self._device.address)
-        if "via_device_id" not in DeviceInfo.__annotations__:
-            return {"via_device": parent}
+        if not _LINKS_PARENT_BY_ID:
+            return {"via_device": self._station_identifier}
 
-        registry_entry = getattr(self, "registry_entry", None)
-        parent_entry = async_get_device(
-            dr.async_get(self.hass),
-            identifiers={parent},
-            config_entry_id=(
-                registry_entry.config_entry_id if registry_entry is not None else None
-            ),
-        )
-        if parent_entry is None:
+        station = self._registered_device(self._station_identifier)
+        if station is None:
+            _LOGGER.warning(
+                "Extra battery %s of %s is not linked to its station, which is not "
+                "registered yet. Reload the integration to link it.",
+                self._battery_index,
+                self._device.name,
+            )
             return {}
-        return {"via_device_id": parent_entry.id}
+        return {"via_device_id": station.id}
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
@@ -168,16 +198,7 @@ class EcoflowBatteryAddonEntity(EcoflowEntity):
         if not battery_sn:
             return
 
-        registry = dr.async_get(self.hass)
-        identifier = (DOMAIN, f"{self._device.address}_battery_{self._battery_index}")
-        registry_entry = getattr(self, "registry_entry", None)
-        device_entry = async_get_device(
-            registry,
-            identifiers={identifier},
-            config_entry_id=(
-                registry_entry.config_entry_id if registry_entry is not None else None
-            ),
-        )
+        device_entry = self._registered_device(self._pack_identifier)
         if device_entry is None:
             return
 
@@ -188,7 +209,7 @@ class EcoflowBatteryAddonEntity(EcoflowEntity):
         ):
             return
 
-        registry.async_update_device(
+        dr.async_get(self.hass).async_update_device(
             device_entry.id, serial_number=battery_sn, model=battery_model
         )
 

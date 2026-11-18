@@ -3,6 +3,18 @@
 Alle nennenswerten Änderungen an dieser Integration. Englische Fassung:
 [CHANGELOG.en.md](CHANGELOG.en.md).
 
+## 0.1.1
+
+### Behoben
+
+- Zusatzakku wird beim ersten Anlegen zuverlässig mit seiner Station verknüpft. Die Station
+  wird jetzt im eigenen Konfigurationseintrag gesucht, auch bevor die Entität registriert
+  ist.
+- Fehlt die Station in der Geräte-Registry, steht das als Warnung im Log, statt dass die
+  Verknüpfung still wegfällt.
+- Die Erkennung, wie Home Assistant ein Gerät mit seinem Elterngerät verknüpft, hängt nicht
+  mehr an Typannotationen.
+
 ## 0.1.0
 
 Erste Version. Harter Fork von `rabits/ha-ef-ble` v1.3.1, reduziert auf die EcoFlow
