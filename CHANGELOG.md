@@ -3,6 +3,15 @@
 Alle nennenswerten Änderungen an dieser Integration. Englische Fassung:
 [CHANGELOG.en.md](CHANGELOG.en.md).
 
+## 0.1.3
+
+### Behoben
+
+- Die Leistung je AC-Gruppe („AC (1) Leistung", „AC (2) Leistung") wird positiv angezeigt,
+  wie die AC-Ausgangsleistung insgesamt. Bisher stand dort der Rohwert des Geräts mit
+  negativem Vorzeichen. Wer die Werte in Automationen oder Statistiken nutzt, muss das
+  Vorzeichen anpassen.
+
 ## 0.1.2
 
 ### Geändert

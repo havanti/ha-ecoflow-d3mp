@@ -83,21 +83,31 @@ def _ac_list(*watts):
 @pytest.mark.parametrize(
     ("watts", "expected"),
     [
-        ((0, 0, -82, 0, 0), -82.0),
-        ((0, 0, 0, -82, 0), -82.0),
+        ((0, 0, -82, 0, 0), 82.0),
+        ((0, 0, 0, -82, 0), 82.0),
         ((-141, 0, 0, 0, 0), 0.0),
     ],
 )
 def test_ac2_power_takes_whichever_index_carries_load(device, watts, expected):
     feed(device, pow_get_ac_out_list=_ac_list(*watts))
     assert device.ac_power_2 == expected
-    assert device.ac_power_1 == watts[0]
+
+
+@pytest.mark.parametrize(("reported", "shown"), [(-141, 141.0), (0, 0.0)])
+def test_ac_group_power_reads_positive_like_the_total(device, reported, shown):
+    feed(
+        device,
+        pow_get_ac_out=reported,
+        pow_get_ac_out_list=_ac_list(reported, 0, 0, 0, 0),
+    )
+    assert device.ac_power_1 == shown
+    assert device.ac_power_1 == device.ac_output_power
 
 
 def test_ac2_power_keeps_last_value_when_both_indices_carry_load(device):
     feed(device, pow_get_ac_out_list=_ac_list(0, 0, -82, 0, 0))
     feed(device, pow_get_ac_out_list=_ac_list(0, 0, -50, -60, 0))
-    assert device.ac_power_2 == -82.0
+    assert device.ac_power_2 == 82.0
 
 
 def test_ac2_power_needs_the_full_list(device):

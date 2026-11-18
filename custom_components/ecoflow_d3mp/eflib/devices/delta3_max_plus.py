@@ -126,6 +126,8 @@ def _bits_to_float(value: int) -> float | None:
     return result if math.isfinite(result) else None
 
 
+# The device reports delivered power as negative. Both group readings are turned
+# positive, like every other output of this device.
 class _Ac2PortPower(repeated_pb_field_type(pb.pow_get_ac_out_list.pow_get_ac_out_item)):
     def get_item(self, value: Sequence[float]) -> float | None:
         if len(value) <= _AC2_INDEX_B:
@@ -138,9 +140,9 @@ class _Ac2PortPower(repeated_pb_field_type(pb.pow_get_ac_out_list.pow_get_ac_out
             # neither known layout - report nothing rather than a guess
             return None
         if a_live:
-            return round(a, 2)
+            return out_power(a)
         if b_live:
-            return round(b, 2)
+            return out_power(b)
         return 0.0
 
 
@@ -148,7 +150,7 @@ class _ACPortPower(repeated_pb_field_type(pb.pow_get_ac_out_list.pow_get_ac_out_
     index: int
 
     def get_item(self, value: Sequence[float]) -> float | None:
-        return round(value[self.index], 2) if value else None
+        return out_power(value[self.index]) if value else None
 
 
 class _DcChargingMaxField(

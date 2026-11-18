@@ -2,6 +2,14 @@
 
 All notable changes to this integration. German version: [CHANGELOG.md](CHANGELOG.md).
 
+## 0.1.3
+
+### Fixed
+
+- The power per AC group ("AC (1) Power", "AC (2) Power") reads positive, like the total AC
+  output power. It used to show the device's raw value with a negative sign. Automations or
+  statistics using these values need their sign adjusted.
+
 ## 0.1.2
 
 ### Changed
