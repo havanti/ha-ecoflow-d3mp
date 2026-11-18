@@ -1,0 +1,47 @@
+# Changelog
+
+Alle nennenswerten Änderungen an dieser Integration. Englische Fassung:
+[CHANGELOG.en.md](CHANGELOG.en.md).
+
+## 0.1.0
+
+Erste Version. Harter Fork von `rabits/ha-ef-ble` v1.3.1, reduziert auf die EcoFlow
+DELTA 3 Max Plus und ihren Zusatzakku.
+
+### Geändert gegenüber ha-ef-ble
+
+- Neue Domain `ecoflow_d3mp`. Einträge aus `ha-ef-ble` werden nicht übernommen; das Gerät
+  wird neu eingerichtet.
+- Unterstützt wird nur noch die DELTA 3 Max Plus. Alle anderen Geräte, die
+  Wave-Klimaplattform und die Sammelfunktion für nicht unterstützte Geräte sind entfernt.
+- Entitätsschlüssel sind bereinigt, Unique IDs lauten `d3mp_{seriennummer}_{schlüssel}`.
+- Übersetzungen: Englisch und Deutsch.
+
+### Neu
+
+- Zusatzakku als eigenes Gerät: Ladestand, Kapazität (Nenn, Voll, Rest), Zellspannungen,
+  Temperaturen, Ladezustand, Typ und Strom. Den Strom meldet das Gerät nicht; er wird aus
+  der Änderung der Restkapazität über eine Minute gemessen (Laden positiv). Ein zweiter Port
+  wird gelesen, ist aber ungeprüft und standardmäßig deaktiviert.
+- Schalter für die zweite AC-Gruppe, X-Boost, Signalton und „Ausgänge nach Stromausfall
+  wiederherstellen". Auswahl des AC-Lademodus.
+- Regler für Standby-Zeiten, Display-Abschaltzeit und Display-Helligkeit.
+- Lesewerte: Schnellladen, Betriebszustand, Ausfallreserve je Ausgang, Fehlercodes je
+  Baugruppe, Ladezustand von System und Hauptakku, WLAN-Signalstärke.
+- Die Backup-Reserve liest ihren Zustand aus dem Feld, das das Gerät tatsächlich setzt, und
+  sendet beim Scharfschalten immer auch den Pegel mit.
+
+### Grenzen
+
+- Regler bleiben im Bereich, den EcoFlow für dieses Modell anbietet: Ladegrenze 50–100 %,
+  Entladegrenze 0–30 %, Reserve bis 50 % und fünf Punkte über der Entladegrenze,
+  AC-Ladeleistung 200–2400 W, DC-Eingangsstrom 4–8 A.
+- Ausschalten, „Netz-Durchleitung sperren" und der DC-Eingangsstrom sind standardmäßig
+  deaktiviert. Ausschalten warnt im Log, wenn Leistung fließt, weil das Gerät den Befehl
+  dann ignoriert.
+
+### Entfernt
+
+- Schalter für die Energie-Strategien und für die USB-Ausgänge sowie die Sensoren für
+  Lüfter und Akku-Leistung: Das Gerät meldet die zugehörigen Werte nicht oder reagiert
+  nicht auf den Befehl.

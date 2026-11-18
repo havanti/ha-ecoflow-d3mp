@@ -1,0 +1,29 @@
+name: Python Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.13', '3.14']
+    name: Run python tests
+    steps:
+      - name: Check out code from GitHub
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: pyproject.toml
+      - name: Setup Python 3.x
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install private D-Bus test dependency
+        run: sudo apt-get update -qq && sudo apt-get install --no-install-recommends -y dbus
+      - name: Tests
+        run: uv run --group hass pytest tests

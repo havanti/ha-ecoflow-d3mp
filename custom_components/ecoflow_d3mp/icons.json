@@ -1,0 +1,244 @@
+{
+  "entity": {
+    "button": {
+      "power_off": {
+        "default": "mdi:power"
+      }
+    },
+    "binary_sensor": {
+      "error_occurred": {
+        "default": "mdi:alert-circle",
+        "state": {
+          "off": "mdi:alert-circle-outline"
+        }
+      },
+      "solar_weak": {
+        "default": "mdi:weather-sunset"
+      },
+      "fast_charge": {
+        "default": "mdi:battery-charging-high",
+        "state": {
+          "off": "mdi:battery-charging-outline"
+        }
+      },
+      "outage_reserve_dc_enabled": {
+        "default": "mdi:battery-lock",
+        "state": {
+          "off": "mdi:battery-lock-open"
+        }
+      },
+      "outage_reserve_ac_1_enabled": {
+        "default": "mdi:battery-lock",
+        "state": {
+          "off": "mdi:battery-lock-open"
+        }
+      },
+      "outage_reserve_ac_2_enabled": {
+        "default": "mdi:battery-lock",
+        "state": {
+          "off": "mdi:battery-lock-open"
+        }
+      },
+      "outage_active": {
+        "default": "mdi:transmission-tower-off",
+        "state": {
+          "off": "mdi:transmission-tower"
+        }
+      }
+    },
+    "sensor": {
+      "input_power": {
+        "default": "mdi:home-lightning-bolt-outline"
+      },
+      "output_power": {
+        "default": "mdi:home-lightning-bolt-outline"
+      },
+      "ac_input_power": {
+        "default": "mdi:current-ac"
+      },
+      "ac_output_power": {
+        "default": "mdi:current-ac"
+      },
+      "dc_12v_output_power": {
+        "default": "mdi:current-dc"
+      },
+      "usbc_1_output_power": {
+        "default": "mdi:usb-c-port"
+      },
+      "usba_1_output_power": {
+        "default": "mdi:usb-port"
+      },
+      "usbc_2_output_power": {
+        "default": "mdi:usb-c-port"
+      },
+      "usba_2_output_power": {
+        "default": "mdi:usb-port"
+      },
+      "dc_port_1_input_power": {
+        "default": "mdi:current-dc"
+      },
+      "dc_port_2_input_power": {
+        "default": "mdi:current-dc"
+      },
+      "dc_port_1_state": {
+        "default": "mdi:current-dc"
+      },
+      "dc_port_2_state": {
+        "default": "mdi:current-dc"
+      },
+      "solar_input_power_1": {
+        "default": "mdi:solar-power-variant-outline"
+      },
+      "solar_input_power_2": {
+        "default": "mdi:solar-power-variant-outline"
+      },
+      "wifi_rssi": {
+        "default": "mdi:wifi"
+      },
+      "usbc_3_output_power": {
+        "default": "mdi:usb-c-port"
+      },
+      "port_power": {
+        "default": "mdi:current-ac"
+      },
+      "port_error_code": {
+        "default": "mdi:alert-circle-outline"
+      },
+      "charging_state": {
+        "default": "mdi:battery-charging"
+      },
+      "main_battery_charging_state": {
+        "default": "mdi:battery-charging"
+      },
+      "remaining_time_charging": {
+        "default": "mdi:battery-clock"
+      },
+      "remaining_time_discharging": {
+        "default": "mdi:battery-clock-outline"
+      },
+      "remaining_capacity": {
+        "default": "mdi:battery-medium"
+      },
+      "full_capacity": {
+        "default": "mdi:battery-high"
+      },
+      "design_capacity": {
+        "default": "mdi:battery"
+      },
+      "extra_battery_type": {
+        "default": "mdi:information-outline"
+      },
+      "run_state": {
+        "default": "mdi:state-machine"
+      },
+      "outage_reserve_dc": {
+        "default": "mdi:battery-lock"
+      },
+      "outage_reserve_ac_1": {
+        "default": "mdi:battery-lock"
+      },
+      "outage_reserve_ac_2": {
+        "default": "mdi:battery-lock"
+      },
+      "llc_flag": {
+        "default": "mdi:information-outline"
+      },
+      "protocol_version": {
+        "default": "mdi:information-outline"
+      },
+      "update_ban": {
+        "default": "mdi:update"
+      },
+      "protect_port": {
+        "default": "mdi:shield-outline"
+      }
+    },
+    "switch": {
+      "backup_reserve": {
+        "default": "mdi:battery-sync",
+        "state": {
+          "off": "mdi:battery-sync-outline"
+        }
+      },
+      "ac_ports_1": {
+        "default": "mdi:power-plug",
+        "state": {
+          "off": "mdi:power-plug-off"
+        }
+      },
+      "dc_12v_port": {
+        "default": "mdi:power-plug",
+        "state": {
+          "off": "mdi:power-plug-off"
+        }
+      },
+      "disable_grid_bypass": {
+        "default": "mdi:transmission-tower-off",
+        "state": {
+          "off": "mdi:transmission-tower"
+        }
+      },
+      "ac_ports_2": {
+        "default": "mdi:power-plug",
+        "state": {
+          "off": "mdi:power-plug-off"
+        }
+      },
+      "xboost": {
+        "default": "mdi:lightning-bolt-circle"
+      },
+      "beeper": {
+        "default": "mdi:volume-high",
+        "state": {
+          "off": "mdi:volume-off"
+        }
+      },
+      "output_memory": {
+        "default": "mdi:restore"
+      }
+    },
+    "number": {
+      "backup_reserve_level": {
+        "default": "mdi:battery-sync"
+      },
+      "battery_discharge_limit": {
+        "default": "mdi:battery-arrow-down-outline"
+      },
+      "battery_charge_limit": {
+        "default": "mdi:battery-arrow-up"
+      },
+      "ac_charging_power": {
+        "default": "mdi:lightning-bolt"
+      },
+      "dc_port_1_charging_current": {
+        "default": "mdi:current-dc"
+      },
+      "dc_port_2_charging_current": {
+        "default": "mdi:current-dc"
+      },
+      "device_standby_time": {
+        "default": "mdi:timer-outline"
+      },
+      "ac_1_standby_time": {
+        "default": "mdi:timer-outline"
+      },
+      "ac_2_standby_time": {
+        "default": "mdi:timer-outline"
+      },
+      "dc_standby_time": {
+        "default": "mdi:timer-outline"
+      },
+      "screen_off_time": {
+        "default": "mdi:monitor-off"
+      },
+      "screen_brightness": {
+        "default": "mdi:brightness-6"
+      }
+    },
+    "select": {
+      "ac_charging_mode": {
+        "default": "mdi:battery-charging-outline"
+      }
+    }
+  }
+}

@@ -1,0 +1,555 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Device is already configured",
+      "not_supported": "Device is not supported",
+      "no_devices_found": "No supported EcoFlow devices found. Make sure your device is not connected to the EcoFlow app via Bluetooth.",
+      "reconfigure_successful": "Reconfiguration was successful"
+    },
+    "error": {
+      "cannot_connect": "Cannot connect",
+      "invalid_auth": "Authentication is invalid",
+      "unknown": "An unexpected error occurred, check the logs for details",
+      "email_empty": "Email cannot be empty",
+      "password_empty": "Password cannot be empty",
+      "device_auth_failed": "Device authentication failed - {reason_failed}",
+      "auth_failed_need_refresh_token": "Authentication failed - Token needs to be refreshed, try again",
+      "auth_failed_device_internal_error": "Authentication failed - Device internal error",
+      "auth_failed_device_already_bound": "Authentication failed - Device is already bound to another account",
+      "auth_failed_need_bind_install_first": "Authentication failed - Device needs to be bound via the EcoFlow app first",
+      "auth_failed_app_send_data_error": "Authentication failed - Error sending data to the device",
+      "auth_failed_wrong_key": "Authentication failed - Wrong key, user ID is either incorrect, for a different region or a different account",
+      "auth_failed_unknown": "Authentication failed - Unknown error, check logs for more info",
+      "auth_failed_key_info": "Authentication failed - Could not request key info",
+      "bt_timeout": "Could not connect to the device - connection timed out",
+      "bt_not_found": "Device was not found - try refreshing the bluetooth integration if this error occurs repeatedly",
+      "bt_general_error": "Could not connect to the device - see the logs for more details",
+      "error_try_refresh": "Device disconnected before it could authenticate - check logs for more info"
+    },
+    "step": {
+      "bluetooth_confirm": {
+        "title": "Discovered Device Configuration",
+        "data": {
+          "user_id": "EcoFlow User ID",
+          "address": "BLE Device",
+          "update_period": "Update Period"
+        },
+        "data_description": {
+          "update_period": "Number of seconds to wait before processing the next device update. Value of 0 means all updates are processed immediately (will result in a high number of database writes)."
+        },
+        "sections": {
+          "login": {
+            "name": "EcoFlow Login (skip if you already have your user ID)",
+            "description": "After you click Submit with your login information filled in, your EcoFlow User ID will be automatically populated and this form will clear itself. Only your user ID is required so you will not be able to proceed to the next page unless this section is empty.",
+            "data": {
+              "email": "Email / Phone",
+              "password": "Password",
+              "region": "Region"
+            },
+            "data_description": {
+              "region": "Pick the EcoFlow API host matching your account. Auto uses api.ecoflow.com for email and api-cn for phone numbers. Your account may live on a different host than your actual geographic region, so if you receive an \"Account does not exist\" message, try selecting the host explicitly."
+            }
+          },
+          "log_options": {
+            "name": "Logging Options",
+            "description": "Detailed logging options. Most of these will flood your logs, so avoid leaving them enabled for long periods.",
+            "data": {
+              "log_masked": "Mask sensitive information (useful when sharing logs publicly)",
+              "log_connection": "Log device connection requests and responses",
+              "log_messages": "Log deserialized device update messages",
+              "log_packets": "Log packet objects",
+              "log_encrypted_payloads": "Log encrypted payloads",
+              "log_payloads": "Log decrypted payloads",
+              "log_bleak": "Enable bleak debug log level (not masked and not filtered to this device)"
+            }
+          },
+          "advanced_connection_options": {
+            "name": "Advanced connection options",
+            "description": "These options affect the Bluetooth connection behavior. Only change them if you are experiencing connectivity issues.",
+            "data": {
+              "connection_timeout": "Connection timeout",
+              "connection_delay": "Connection delay",
+              "preferred_proxy": "Preferred Bluetooth proxy",
+              "preferred_proxy_timeout": "Preferred proxy timeout",
+              "bluez_start_notify": "Use BlueZ start notify"
+            },
+            "data_description": {
+              "connection_timeout": "Number of seconds to wait for the device to connect and authenticate.",
+              "connection_delay": "Number of seconds to wait before connecting when another EcoFlow device has just connected. Home Assistant picks which Bluetooth proxy each connection goes through and penalizes proxies that are already busy connecting, so devices coming up at the same moment can end up on a more distant proxy for the rest of the session. Spacing them out gives each device a better chance of being connected through the proxy closest to it. A device that is not coming up alongside another is never delayed. Set to 0 to disable this for the device.",
+              "preferred_proxy": "Connect this device through a particular Bluetooth adapter or proxy when possible, for example the one sitting next to it. Home Assistant chooses the path itself and cannot be told to use a specific one, so the integration instead waits until the proxy you pick is the one Home Assistant would choose anyway, and connects at that moment. A proxy whose signal is weaker than another may therefore never be chosen. The list is taken when this page opens and only holds adapters and proxies that are online right now, so if one is missing, bring it back online and reopen this page. Leave this on \"Any available proxy\" unless a device keeps connecting through the wrong one.",
+              "preferred_proxy_timeout": "Number of seconds to wait for the preferred proxy before connecting through whatever proxy is available. A proxy that is already online is usually picked straight away, so this only comes into play when it is still starting up - after restarting Home Assistant, a proxy can take a while to come back, and the device stays disconnected until it does or this runs out. Set to 0 to connect immediately through whichever proxy is best at that moment.",
+              "bluez_start_notify": "Try enabling this if you experience frequent disconnects when multiple BLE devices are connected, or if you see `AcquireNotify: Read error` / `Unexpected EOF on notification file handle` in your logs."
+            }
+          }
+        }
+      },
+      "user": {
+        "title": "Add EcoFlow Device",
+        "description": "Select the DELTA 3 Max Plus to add.",
+        "data": {
+          "address": "BLE Device"
+        }
+      },
+      "device_confirm": {
+        "title": "{name} config options",
+        "data": {
+          "user_id": "EcoFlow User ID",
+          "address": "BLE Device",
+          "update_period": "Update Period"
+        },
+        "data_description": {
+          "update_period": "Number of seconds to wait before processing the next device update. Value of 0 means all updates are processed immediately (will result in a high number of DB writes)."
+        },
+        "sections": {
+          "login": {
+            "name": "EcoFlow Login (skip if you already have your user ID)",
+            "description": "After you click Submit with your login information filled in, your EcoFlow User ID will be automatically populated and this form will clear itself. Only your user ID is required so you will not be able to proceed to the next page unless this section is empty.",
+            "data": {
+              "email": "Email / Phone",
+              "password": "Password",
+              "region": "Region"
+            },
+            "data_description": {
+              "region": "Pick the EcoFlow API host matching your account. Auto uses api.ecoflow.com for email and api-cn for phone numbers. Your account may live on a different host than your actual geographic region, so if you receive an \"Account does not exist\" message, try selecting the host explicitly."
+            }
+          },
+          "log_options": {
+            "name": "Logging Options",
+            "description": "Detailed logging options. Most of these will flood your logs, so avoid leaving them enabled for long periods.",
+            "data": {
+              "log_masked": "Mask sensitive information (useful when sharing logs publicly)",
+              "log_connection": "Log device connection requests and responses",
+              "log_messages": "Log deserialized device update messages",
+              "log_packets": "Log packet objects",
+              "log_encrypted_payloads": "Log encrypted payloads",
+              "log_payloads": "Log decrypted payloads",
+              "log_bleak": "Enable bleak debug log level (not masked and not filtered to this device)"
+            }
+          },
+          "advanced_connection_options": {
+            "name": "Advanced connection options",
+            "description": "These options affect the Bluetooth connection behavior. Only change them if you are experiencing connectivity issues.",
+            "data": {
+              "connection_timeout": "Connection timeout",
+              "connection_delay": "Connection delay",
+              "preferred_proxy": "Preferred Bluetooth proxy",
+              "preferred_proxy_timeout": "Preferred proxy timeout",
+              "bluez_start_notify": "Use BlueZ start notify"
+            },
+            "data_description": {
+              "connection_timeout": "Number of seconds to wait for the device to connect and authenticate.",
+              "connection_delay": "Number of seconds to wait before connecting when another EcoFlow device has just connected. Home Assistant picks which Bluetooth proxy each connection goes through and penalizes proxies that are already busy connecting, so devices coming up at the same moment can end up on a more distant proxy for the rest of the session. Spacing them out gives each device a better chance of being connected through the proxy closest to it. A device that is not coming up alongside another is never delayed. Set to 0 to disable this for the device.",
+              "preferred_proxy": "Connect this device through a particular Bluetooth adapter or proxy when possible, for example the one sitting next to it. Home Assistant chooses the path itself and cannot be told to use a specific one, so the integration instead waits until the proxy you pick is the one Home Assistant would choose anyway, and connects at that moment. A proxy whose signal is weaker than another may therefore never be chosen. The list is taken when this page opens and only holds adapters and proxies that are online right now, so if one is missing, bring it back online and reopen this page. Leave this on \"Any available proxy\" unless a device keeps connecting through the wrong one.",
+              "preferred_proxy_timeout": "Number of seconds to wait for the preferred proxy before connecting through whatever proxy is available. A proxy that is already online is usually picked straight away, so this only comes into play when it is still starting up - after restarting Home Assistant, a proxy can take a while to come back, and the device stays disconnected until it does or this runs out. Set to 0 to connect immediately through whichever proxy is best at that moment.",
+              "bluez_start_notify": "Try enabling this if you experience frequent disconnects when multiple BLE devices are connected, or if you see `AcquireNotify: Read error` / `Unexpected EOF on notification file handle` in your logs."
+            }
+          }
+        }
+      },
+      "reconfigure": {
+        "data": {
+          "user_id": "EcoFlow User ID",
+          "extra_battery": "Enabled Extra Batteries"
+        }
+      },
+      "connect": {
+        "title": "Connecting to device"
+      }
+    },
+    "progress": {
+      "connecting": "Establishing Bluetooth connection to {name}...",
+      "exchanging_keys": "Connected to {name}, exchanging encryption keys...",
+      "authenticating": "Authenticating with {name}...",
+      "finalizing": "Finishing the connection check..."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options for {device_name}",
+        "data": {
+          "update_period": "Update Period"
+        },
+        "data_description": {
+          "update_period": "Number of seconds to wait before processing the next device update. Value of 0 means all updates are processed immediately (will result in a high number of DB writes)."
+        },
+        "sections": {
+          "device_options": {
+            "name": "Device options",
+            "description": "Advanced options specific to this device model. Only change these if you know what you are doing.",
+            "data": {
+              "unlock_ac_charging_minimum": "Unlock AC charging speed minimum",
+              "unlock_dc_charging_minimum": "Unlock DC charging speed minimum"
+            },
+            "data_description": {
+              "unlock_ac_charging_minimum": "Allows setting the AC charging speed below the minimum the EcoFlow app enforces. 1 W stops the device drawing from the grid without unplugging it, which is what solar-surplus automations need; charging that slowly is less efficient and may generate additional heat.",
+              "unlock_dc_charging_minimum": "⚠️ WARNING: this may damage your device. The EcoFlow app limits are likely there for a reason, and running the DC input below them for long periods can wear its components; damage caused this way may not be covered by warranty. Use at your own risk.\n\nAllows setting the DC charging speed below the minimum the EcoFlow app enforces, down to 0 A. 0 A is not off: the device can still draw a small current from the input. The value caps the current drawn from the DC input, so a lower one keeps the device within what a weak source can give - a fuse-limited car socket, a small supply or a single panel - instead of stalling it by asking for more."
+            }
+          },
+          "diagnostics_options": {
+            "name": "Diagnostics",
+            "description": "Configure diagnostics data collection and encryption.",
+            "data": {
+              "diagnostics_on_exception": "Save diagnostics on exception",
+              "collect_packets": "Enable packet collection",
+              "collect_packets_amount": "Number of packets to store",
+              "diagnostics_encrypt": "Encrypt diagnostics data"
+            },
+            "data_description": {
+              "diagnostics_on_exception": "When enabled, packets are collected from the start of each connection attempt. If a connection error occurs, collected data is automatically saved to disk for debugging.",
+              "collect_packets": "Enabling this option will start storing packets for diagnostics info - wait a minute after you enable this option before downloading diagnostics info and don't forget to turn it off.\nSome devices may contain identifying information in their messages such as your exact location, make sure encryption is enabled before sharing.",
+              "diagnostics_encrypt": "When enabled, sensitive diagnostics data (packets, session keys, manufacturer data) is encrypted before being included in the diagnostics download. Disable only if you need raw data for local debugging."
+            }
+          },
+          "log_options": {
+            "name": "Logging Options",
+            "description": "Detailed logging options. Most of these will flood your logs, so avoid leaving them enabled for long periods.",
+            "data": {
+              "log_masked": "Mask sensitive information (useful when sharing logs publicly)",
+              "log_connection": "Log device connection requests and responses",
+              "log_messages": "Log deserialized device update messages",
+              "log_packets": "Log packet objects",
+              "log_encrypted_payloads": "Log encrypted payloads",
+              "log_payloads": "Log decrypted payloads",
+              "log_bleak": "Enable bleak debug log level (not masked and not filtered to this device)"
+            }
+          },
+          "advanced_connection_options": {
+            "name": "Advanced connection options",
+            "description": "These options affect the Bluetooth connection behavior. Only change them if you are experiencing connectivity issues.",
+            "data": {
+              "connection_timeout": "Connection timeout",
+              "connection_delay": "Connection delay",
+              "preferred_proxy": "Preferred Bluetooth proxy",
+              "preferred_proxy_timeout": "Preferred proxy timeout",
+              "bluez_start_notify": "Use BlueZ start notify"
+            },
+            "data_description": {
+              "connection_timeout": "Number of seconds to wait for the device to connect and authenticate.",
+              "connection_delay": "Number of seconds to wait before connecting when another EcoFlow device has just connected. Home Assistant picks which Bluetooth proxy each connection goes through and penalizes proxies that are already busy connecting, so devices coming up at the same moment can end up on a more distant proxy for the rest of the session. Spacing them out gives each device a better chance of being connected through the proxy closest to it. A device that is not coming up alongside another is never delayed. Set to 0 to disable this for the device.",
+              "preferred_proxy": "Connect this device through a particular Bluetooth adapter or proxy when possible, for example the one sitting next to it. Home Assistant chooses the path itself and cannot be told to use a specific one, so the integration instead waits until the proxy you pick is the one Home Assistant would choose anyway, and connects at that moment. A proxy whose signal is weaker than another may therefore never be chosen. The list is taken when this page opens and only holds adapters and proxies that are online right now, so if one is missing, bring it back online and reopen this page. Leave this on \"Any available proxy\" unless a device keeps connecting through the wrong one.",
+              "preferred_proxy_timeout": "Number of seconds to wait for the preferred proxy before connecting through whatever proxy is available. A proxy that is already online is usually picked straight away, so this only comes into play when it is still starting up - after restarting Home Assistant, a proxy can take a while to come back, and the device stays disconnected until it does or this runs out. Set to 0 to connect immediately through whichever proxy is best at that moment.",
+              "bluez_start_notify": "Try enabling this if you experience frequent disconnects when multiple BLE devices are connected, or if you see `AcquireNotify: Read error` / `Unexpected EOF on notification file handle` in your logs."
+            }
+          }
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "unknown_error": {
+      "message": "Unknown error: {error}"
+    },
+    "unable_to_create_device": {
+      "message": "Could not create the EcoFlow device"
+    },
+    "device_not_present": {
+      "message": "EcoFlow device is not in range"
+    },
+    "could_not_connect": {
+      "message": "Could not connect to the device after {time} seconds, check the logs.\nError message: {error_msg}"
+    },
+    "error_after_connected": {
+      "message": "Error occurred before device could authenticate"
+    },
+    "authentication_failed": {
+      "message": "Authentication failed"
+    },
+    "could_not_reconnect_after_max_attempts": {
+      "message": "Could not reconnect after losing connection {attempts} times."
+    },
+    "could_not_connect_no_retry": {
+      "message": "Could not connect to device after {attempts} unsuccessful attempts"
+    },
+    "failed_after_successful_connection": {
+      "message": "Device connected but did not get to auth procedure, last state: {last_state}"
+    },
+    "missing_address_or_user_id": {
+      "message": "Stored configuration is missing the device {missing}. Remove the device and add it again to repair the configuration entry."
+    }
+  },
+  "issues": {
+    "max_connection_attempts_reached": {
+      "title": "Could not connect to {device_name} after {attempts} unsuccessful attempts",
+      "description": "Failed to connect to {device_name} after {attempts} unsuccessful attempts. Check the logs for more info.\n\nAutomatic retry was disabled to not spam logs, integration has to be reloaded manually. This error clears after successful connection."
+    },
+    "charging_minimum_applied": {
+      "title": "Charging controls on {device_name} now stop at the EcoFlow app's minimum unless you unlock it in the device options",
+      "description": "The AC and DC charging controls now refuse values below the minimum the EcoFlow app enforces, so an automation that sets a lower value will fail with an out-of-range error.\n\n⚠️ WARNING: going below these minimums may damage your device. EcoFlow likely set them for a reason, running below them for long periods can wear its components, and damage caused this way may not be covered by warranty. Only unlock them if you accept that risk.\n\nTo keep setting values below the minimum, turn on the matching option under Configure for this device.\n\nThe minimums for this device are {minimums}."
+    }
+  },
+  "entity": {
+    "button": {
+      "power_off": {
+        "name": "Power Off"
+      }
+    },
+    "binary_sensor": {
+      "plugged_in_ac": {
+        "name": "AC Plugged In"
+      },
+      "error_occurred": {
+        "name": "Error Occurred"
+      },
+      "solar_weak": {
+        "name": "Weak Solar Source"
+      },
+      "fast_charge": {
+        "name": "Fast Charging"
+      },
+      "outage_reserve_dc_enabled": {
+        "name": "DC Outage Reserve Armed"
+      },
+      "outage_reserve_ac_1_enabled": {
+        "name": "AC Outage Reserve Armed"
+      },
+      "outage_reserve_ac_2_enabled": {
+        "name": "AC (2) Outage Reserve Armed"
+      },
+      "outage_active": {
+        "name": "Mains Outage"
+      }
+    },
+    "sensor": {
+      "battery_level": {
+        "name": "Battery Level"
+      },
+      "main_battery_level": {
+        "name": "Main Battery Level"
+      },
+      "input_power": {
+        "name": "Input Power"
+      },
+      "output_power": {
+        "name": "Output Power"
+      },
+      "remaining_time_charging": {
+        "name": "Charge Time Remaining"
+      },
+      "remaining_time_discharging": {
+        "name": "Discharge Time Remaining"
+      },
+      "port_voltage": {
+        "name": "{name} Voltage"
+      },
+      "port_power": {
+        "name": "{name} Power"
+      },
+      "port_error_code": {
+        "name": "{name} Error Code"
+      },
+      "ac_input_power": {
+        "name": "AC Input Power"
+      },
+      "ac_output_power": {
+        "name": "AC Output Power"
+      },
+      "dc_12v_output_power": {
+        "name": "DC 12V Output Power"
+      },
+      "usbc_1_output_power": {
+        "name": "USB C Output Power"
+      },
+      "usba_1_output_power": {
+        "name": "USB A Output Power"
+      },
+      "usbc_2_output_power": {
+        "name": "USB C (2) Output Power"
+      },
+      "usbc_3_output_power": {
+        "name": "USB C (3) Output Power"
+      },
+      "usba_2_output_power": {
+        "name": "USB A (2) Output Power"
+      },
+      "main_battery_max_cell_temperature": {
+        "name": "Cell Temperature"
+      },
+      "max_cell_voltage": {
+        "name": "Max Cell Voltage"
+      },
+      "min_cell_voltage": {
+        "name": "Min Cell Voltage"
+      },
+      "dc_port_1_input_power": {
+        "name": "DC Port Input Power"
+      },
+      "dc_port_2_input_power": {
+        "name": "DC Port (2) Input Power"
+      },
+      "dc_port_1_state": {
+        "name": "DC Input Port State"
+      },
+      "dc_port_2_state": {
+        "name": "DC Input Port (2) State"
+      },
+      "solar_input_power_1": {
+        "name": "Solar Power"
+      },
+      "solar_input_power_2": {
+        "name": "Solar Power (2)"
+      },
+      "wifi_rssi": {
+        "name": "WiFi RSSI"
+      },
+      "charging_state": {
+        "name": "Charging State",
+        "state": {
+          "unknown": "Unknown",
+          "idle": "Idle",
+          "discharging": "Discharging",
+          "charging": "Charging"
+        }
+      },
+      "main_battery_charging_state": {
+        "name": "Main Battery Charging State",
+        "state": {
+          "unknown": "Unknown",
+          "idle": "Idle",
+          "discharging": "Discharging",
+          "charging": "Charging"
+        }
+      },
+      "main_battery_min_cell_temperature": {
+        "name": "Min Cell Temperature"
+      },
+      "remaining_capacity": {
+        "name": "Remaining Capacity"
+      },
+      "full_capacity": {
+        "name": "Full Capacity"
+      },
+      "max_cell_temperature": {
+        "name": "Cell Temperature"
+      },
+      "min_cell_temperature": {
+        "name": "Min Cell Temperature"
+      },
+      "run_state": {
+        "name": "Run State"
+      },
+      "outage_reserve_dc": {
+        "name": "DC Outage Reserve"
+      },
+      "outage_reserve_ac_1": {
+        "name": "AC Outage Reserve"
+      },
+      "outage_reserve_ac_2": {
+        "name": "AC (2) Outage Reserve"
+      },
+      "llc_flag": {
+        "name": "LLC Flag"
+      },
+      "protocol_version": {
+        "name": "Protocol Version"
+      },
+      "update_ban": {
+        "name": "Update Ban"
+      },
+      "protect_port": {
+        "name": "Protected Port"
+      },
+      "design_capacity": {
+        "name": "Design Capacity"
+      },
+      "extra_battery_type": {
+        "name": "Type"
+      },
+      "current": {
+        "name": "Current"
+      }
+    },
+    "select": {
+      "ac_charging_mode": {
+        "name": "AC Charging Mode",
+        "state": {
+          "custom": "Custom",
+          "optimal": "Battery Optimal",
+          "silent": "Silent"
+        }
+      }
+    },
+    "number": {
+      "battery_charge_limit": {
+        "name": "Battery Charge Limit"
+      },
+      "battery_discharge_limit": {
+        "name": "Battery Discharge Limit"
+      },
+      "ac_charging_power": {
+        "name": "AC Charging Speed"
+      },
+      "backup_reserve_level": {
+        "name": "Backup Reserve"
+      },
+      "dc_port_1_charging_current": {
+        "name": "DC Charging Max Amps"
+      },
+      "dc_port_2_charging_current": {
+        "name": "DC (2) Charging Max Amps"
+      },
+      "device_standby_time": {
+        "name": "Device Standby Time"
+      },
+      "ac_1_standby_time": {
+        "name": "AC Standby Time"
+      },
+      "ac_2_standby_time": {
+        "name": "AC (2) Standby Time"
+      },
+      "dc_standby_time": {
+        "name": "DC Standby Time"
+      },
+      "screen_off_time": {
+        "name": "Screen Timeout"
+      },
+      "screen_brightness": {
+        "name": "Screen Brightness"
+      }
+    },
+    "switch": {
+      "ac_ports_1": {
+        "name": "AC Ports"
+      },
+      "dc_12v_port": {
+        "name": "DC 12V Port"
+      },
+      "backup_reserve": {
+        "name": "Backup Reserve"
+      },
+      "ac_ports_2": {
+        "name": "AC Ports (2)"
+      },
+      "disable_grid_bypass": {
+        "name": "Disable Grid Bypass"
+      },
+      "xboost": {
+        "name": "X-Boost"
+      },
+      "beeper": {
+        "name": "Beeper"
+      },
+      "output_memory": {
+        "name": "Restore Outputs After Power Loss"
+      }
+    }
+  },
+  "selector": {
+    "ecoflow_region": {
+      "options": {
+        "auto": "Auto (api.ecoflow.com for email, api-cn for phone)",
+        "api": "api.ecoflow.com (Global / US)",
+        "api-e": "api-e.ecoflow.com (Europe)",
+        "api-a": "api-a.ecoflow.com (Asia / MEA)",
+        "api-j": "api-j.ecoflow.com (Japan)",
+        "api-r": "api-r.ecoflow.com (Russia)",
+        "api-cn": "api-cn.ecoflow.com (China - phone number only)"
+      }
+    },
+    "preferred_proxy": {
+      "options": {
+        "any": "Any available proxy"
+      }
+    }
+  }
+}
