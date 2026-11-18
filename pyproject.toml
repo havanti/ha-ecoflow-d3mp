@@ -32,6 +32,7 @@ hass = [
   "aiousbwatcher",
   "homeassistant>=2024.7",
   "pyserial",
+  "serialx",
 ]
 lint = [
   "prek",
