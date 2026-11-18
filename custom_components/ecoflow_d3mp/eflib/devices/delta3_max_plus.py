@@ -72,6 +72,11 @@ _RESV_TEMPS = 13
 _RESV_CHG_STATE = 14
 _RESV_TEMP_SENSORS = 4
 _PACK_CELLS_IN_SERIES = 16
+# The pack reports capacity in Ah and no energy. Its rated 2048 Wh over the 40 Ah
+# it reports as design capacity is 51.2 V, the nominal voltage of sixteen LiFePO4
+# cells, and that is what turns its Ah into Wh.
+_CELL_NOMINAL_V = 3.2
+_PACK_NOMINAL_V = _PACK_CELLS_IN_SERIES * _CELL_NOMINAL_V
 # A pack that was just unplugged reports zeroes for its cells
 _CELL_MV_FLOOR = 2000
 _MAH_PER_AH = 1000
@@ -295,6 +300,15 @@ def _pack_ah(index: int):
         if (word := _word(words, index)) is None:
             return None
         return word / _MAH_PER_AH
+
+    return read
+
+
+def _pack_wh(index: int):
+    def read(words: list[int]) -> int | None:
+        if (word := _word(words, index)) is None:
+            return None
+        return round(word / _MAH_PER_AH * _PACK_NOMINAL_V)
 
     return read
 
@@ -524,6 +538,10 @@ class Device(DeviceBase, ProtobufProps):
     )
     _extra_battery_remaining_capacity = _pack_reading(
         "remaining_capacity", _pack_ah(_RESV_REMAIN_MAH)
+    )
+    _extra_battery_full_energy = _pack_reading("full_energy", _pack_wh(_RESV_FULL_MAH))
+    _extra_battery_remaining_energy = _pack_reading(
+        "remaining_energy", _pack_wh(_RESV_REMAIN_MAH)
     )
     _extra_battery_min_cell_voltage = _pack_reading(
         "min_cell_voltage", _pack_min_cell_voltage

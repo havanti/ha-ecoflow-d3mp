@@ -17,6 +17,7 @@ from homeassistant.const import (
     EntityCategory,
     UnitOfElectricCurrent,
     UnitOfElectricPotential,
+    UnitOfEnergy,
     UnitOfPower,
     UnitOfTemperature,
     UnitOfTime,
@@ -211,6 +212,20 @@ def current(
     )
 
 
+def stored_energy(
+    key: str = "", enabled: bool = True, **kwargs: Unpack[_SensorKwargs]
+) -> EcoflowSensorEntityDescription:
+    return EcoflowSensorEntityDescription(
+        key=key,
+        native_unit_of_measurement=UnitOfEnergy.WATT_HOUR,
+        device_class=SensorDeviceClass.ENERGY_STORAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        entity_registry_enabled_default=enabled,
+        **kwargs,
+    )
+
+
 def diagnostic(
     key: str = "", **kwargs: Unpack[_SensorKwargs]
 ) -> EcoflowSensorEntityDescription:
@@ -364,6 +379,12 @@ _BATTERY_ADDON_SENSORS: Final = {
     ),
     "extra_battery_{n}_design_capacity": capacity(
         enabled=False, translation_key="design_capacity"
+    ),
+    "extra_battery_{n}_remaining_energy": stored_energy(
+        translation_key="remaining_energy"
+    ),
+    "extra_battery_{n}_full_energy": stored_energy(
+        enabled=False, translation_key="full_energy"
     ),
     "extra_battery_{n}_type": diagnostic(translation_key="extra_battery_type"),
     "extra_battery_{n}_current": current(translation_key="current"),

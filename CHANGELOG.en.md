@@ -2,6 +2,18 @@
 
 All notable changes to this integration. German version: [CHANGELOG.md](CHANGELOG.md).
 
+## 0.1.4
+
+### Added
+
+- Extra battery: remaining energy and full energy in Wh. The pack reports its capacity only
+  in Ah at its 51.2 V pack voltage, where 40 Ah are 2048 Wh. The Ah sensors stay.
+
+### Changed
+
+- Removed library code no device uses since the integration was reduced to the DELTA 3 Max
+  Plus. No behaviour changes.
+
 ## 0.1.3
 
 ### Fixed

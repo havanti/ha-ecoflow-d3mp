@@ -182,6 +182,18 @@ def test_extra_battery_readings(device):
     assert device.extra_battery_1_charging_state is ChargeState.CHARGING
 
 
+def test_extra_battery_energy_from_capacity_at_nominal_voltage(device):
+    feed(device, plug_in_info_dcp_in_flag=True, plug_in_info_dcp_resv=_pack())
+    assert device.extra_battery_1_full_energy == round(39.5 * 51.2)
+    assert device.extra_battery_1_remaining_energy == round(34.56 * 51.2)
+
+
+def test_extra_battery_design_capacity_is_the_rated_energy(device):
+    pack = resv(w4=40000)
+    feed(device, plug_in_info_dcp_in_flag=True, plug_in_info_dcp_resv=pack)
+    assert device.extra_battery_1_full_energy == 2048
+
+
 def test_second_extra_battery_reads_its_own_port(device):
     feed(
         device,

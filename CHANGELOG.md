@@ -3,6 +3,18 @@
 Alle nennenswerten Änderungen an dieser Integration. Englische Fassung:
 [CHANGELOG.en.md](CHANGELOG.en.md).
 
+## 0.1.4
+
+### Neu
+
+- Zusatzakku: Restenergie und Vollenergie in Wh. Der Akku meldet seine Kapazität nur in Ah
+  bei 51,2 V Packspannung; 40 Ah entsprechen dort 2048 Wh. Die Ah-Sensoren bleiben.
+
+### Geändert
+
+- Bibliothekscode entfernt, den seit der Beschränkung auf die DELTA 3 Max Plus kein Gerät
+  mehr nutzt. Kein geändertes Verhalten.
+
 ## 0.1.3
 
 ### Behoben

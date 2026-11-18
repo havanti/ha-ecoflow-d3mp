@@ -453,6 +453,12 @@
       },
       "current": {
         "name": "Current"
+      },
+      "remaining_energy": {
+        "name": "Remaining Energy"
+      },
+      "full_energy": {
+        "name": "Full Energy"
       }
     },
     "select": {

@@ -453,6 +453,12 @@
       },
       "current": {
         "name": "Strom"
+      },
+      "remaining_energy": {
+        "name": "Restenergie"
+      },
+      "full_energy": {
+        "name": "Vollenergie"
       }
     },
     "select": {
