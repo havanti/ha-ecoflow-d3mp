@@ -1,7 +1,5 @@
 """Library for EcoFlow BLE protocol"""
 
-from typing import TYPE_CHECKING
-
 from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
 
@@ -10,9 +8,6 @@ from .devicebase import DeviceBase
 from .entity import controls as controls
 from .entity import units as units
 from .props.updatable_props import UpdatableProps
-
-if TYPE_CHECKING:
-    from .props import ProtobufProps, RawDataProps
 
 
 def sn_from_advertisement(adv_data: AdvertisementData):
@@ -55,18 +50,6 @@ def NewDevice(ble_dev: BLEDevice, adv_data: AdvertisementData) -> DeviceBase | N
     return None
 
 
-def get_protobuf_device(device: DeviceBase | None) -> "ProtobufProps | None":
-    from .props import ProtobufProps  # noqa: PLC0415
-
-    return device if isinstance(device, ProtobufProps) else None
-
-
-def get_fixed_length_coding_device(device: DeviceBase | None) -> "RawDataProps | None":
-    from .props import RawDataProps  # noqa: PLC0415
-
-    return device if isinstance(device, RawDataProps) else None
-
-
 def get_updatable_prop_device(device: DeviceBase):
     if not isinstance(device, UpdatableProps):
         raise TypeError("Device has to be subclass of UpdatableProps")
@@ -89,8 +72,6 @@ __all__ = [
     "controls",
     "device_class_from_sn",
     "get_controls",
-    "get_fixed_length_coding_device",
-    "get_protobuf_device",
     "get_updatable_prop_device",
     "units",
 ]

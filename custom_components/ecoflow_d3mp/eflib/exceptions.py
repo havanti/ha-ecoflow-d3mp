@@ -2,14 +2,6 @@ class PacketParseError(Exception):
     """Error during parsing Packet"""
 
 
-class EncPacketParseError(Exception):
-    """Error during parsing EncPacket"""
-
-
-class PacketReceiveError(Exception):
-    """Error during receiving packet"""
-
-
 class NotConnectedError(Exception):
     """Raised when a command cannot be delivered because the BLE link is unavailable"""
 
@@ -49,10 +41,6 @@ class MaxReconnectAttemptsReached(Exception):
 
 
 class BaseAuthException(Exception):
-    pass
-
-
-class AuthFailedError(BaseAuthException):
     pass
 
 

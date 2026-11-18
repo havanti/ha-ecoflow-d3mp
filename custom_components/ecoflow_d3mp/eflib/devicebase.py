@@ -5,7 +5,7 @@ from collections import defaultdict
 from collections.abc import Callable, Coroutine, Mapping
 from dataclasses import dataclass, field
 from functools import cached_property
-from typing import Any, ClassVar, overload
+from typing import Any, ClassVar, Literal, overload
 
 from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
@@ -31,7 +31,6 @@ from .logging_util import (
     caller_chain,
 )
 from .packet import Packet
-from .props.raw_data_props import Literal
 from .props.updatable_props import Field, UpdatableProps
 
 # Seconds to wait after authentication before falling back to a field's
