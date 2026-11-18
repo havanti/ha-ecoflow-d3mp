@@ -3,6 +3,15 @@
 Alle nennenswerten Änderungen an dieser Integration. Englische Fassung:
 [CHANGELOG.en.md](CHANGELOG.en.md).
 
+## 0.1.2
+
+### Geändert
+
+- Die Zelltemperatur des Hauptakkus ist standardmäßig aktiv, wie die des Zusatzakkus.
+  Bestehende Installationen behalten ihre Einstellung.
+- Eine gewollte Trennung der Bluetooth-Verbindung, etwa beim Neuladen der Integration,
+  steht nicht mehr als Warnung im Log. Eine unerwartete Trennung weiterhin.
+
 ## 0.1.1
 
 ### Behoben

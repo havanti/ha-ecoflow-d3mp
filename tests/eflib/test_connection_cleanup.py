@@ -48,6 +48,24 @@ def transport_client() -> Iterator[TransportClient]:
         sock.close()
 
 
+def test_requested_disconnect_is_not_a_warning(connection: Connection) -> None:
+    connection._logger = Mock()
+    connection._set_state(ConnectionState.DISCONNECTING)
+
+    connection.disconnected()
+
+    connection._logger.warning.assert_not_called()
+
+
+async def test_remote_drop_is_a_warning(connection: Connection) -> None:
+    connection._logger = Mock()
+    connection._set_state(ConnectionState.AUTHENTICATED)
+
+    connection.disconnected()
+
+    connection._logger.warning.assert_called_once()
+
+
 @pytest.mark.parametrize("retry", [False, True])
 async def test_remote_drop_closes_transport(
     connection: Connection, transport_client: TransportClient, retry: bool

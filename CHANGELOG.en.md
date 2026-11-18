@@ -2,6 +2,15 @@
 
 All notable changes to this integration. German version: [CHANGELOG.md](CHANGELOG.md).
 
+## 0.1.2
+
+### Changed
+
+- The cell temperature of the built-in pack is enabled by default, like the extra battery's.
+  Existing installations keep their setting.
+- A Bluetooth disconnect the integration asked for, for example when it is reloaded, is no
+  longer logged as a warning. An unexpected one still is.
+
 ## 0.1.1
 
 ### Fixed

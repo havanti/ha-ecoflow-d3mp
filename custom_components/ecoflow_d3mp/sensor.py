@@ -294,7 +294,7 @@ _SENSORS: Final[dict[str, SensorEntityDescription]] = {
     "usbc_1_output_power": power(),
     "usbc_2_output_power": power(),
     "usbc_3_output_power": power(),
-    "main_battery_max_cell_temperature": temperature(enabled=False),
+    "main_battery_max_cell_temperature": temperature(),
     "dc_port_1_input_power": power(precision=2),
     "dc_port_2_input_power": power(precision=2),
     "dc_port_1_state": enum(options=delta3_max_plus.DCPortState),
