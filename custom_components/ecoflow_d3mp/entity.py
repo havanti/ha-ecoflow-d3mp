@@ -115,7 +115,7 @@ class EcoflowBatteryAddonEntity(EcoflowEntity):
         battery_sn = getattr(self._device, self._sn_prop, None)
         battery_model = battery_name_from_device(self._device, self._battery_index)
 
-        return DeviceInfo(
+        info = DeviceInfo(
             identifiers={
                 (DOMAIN, f"{self._device.address}_battery_{self._battery_index}"),
             },
@@ -123,8 +123,32 @@ class EcoflowBatteryAddonEntity(EcoflowEntity):
             manufacturer=MANUFACTURER,
             model=battery_model,
             serial_number=battery_sn,
-            via_device=(DOMAIN, self._device.address),
         )
+        info.update(self._parent_device_link())
+        return info
+
+    def _parent_device_link(self) -> dict[str, Any]:
+        """
+        Link to the station this pack hangs on, in the form Home Assistant accepts
+
+        Newer releases take the parent's registry id and reject the identifier
+        pair once the entity is re-added from the UI; older ones only know the pair.
+        """
+        parent = (DOMAIN, self._device.address)
+        if "via_device_id" not in DeviceInfo.__annotations__:
+            return {"via_device": parent}
+
+        registry_entry = getattr(self, "registry_entry", None)
+        parent_entry = async_get_device(
+            dr.async_get(self.hass),
+            identifiers={parent},
+            config_entry_id=(
+                registry_entry.config_entry_id if registry_entry is not None else None
+            ),
+        )
+        if parent_entry is None:
+            return {}
+        return {"via_device_id": parent_entry.id}
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
